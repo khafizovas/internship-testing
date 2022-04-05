@@ -1,28 +1,43 @@
 function checkDate(timestamp) {
-    var day = new Date(timestamp * 1000).getDate();
-    var month = new Date(timestamp * 1000).getMonth();
-    var year = new Date(timestamp * 1000).getFullYear();
-    var hour = new Date(timestamp * 1000).getHours();
+	// Для проверки соответствия вводимого timestamp текущей дате
+	// необязательно создавать объект Date по этому timestamp:
+	// можно получить числовое значение, соответствующее текущему
+	// времени, перевести его в количество дней, прошедших с
+	// 1 января 1970 года 00:00:00 по UTC, и сравнить с аналогичным
+	// из переданного в функцию параметра timestamp.
 
-    const current_Date = new Date(Date.now());
-    const current_day = current_Date.getDate();
-    const current_month = current_Date.getMonth() + 1;
-    const currentYear = current_Date.getFullYear();
+	// Вместо new Date(Date.now()) используем Date.now(),
+	// чтобы получить числовое значение, соответствующее текущему
+	// времени, а не создавать экземпляр объекта Date.
 
-    let isSameDate = false;
+	// Везде, где не подразумевается изменения значения переменной,
+	// используем константы, чтобы не выносить их в глобальную область
+	// видимости.
 
-    if (year == currentYear) {
-        if (month == current_month) {
-            if (day == current_day) {
-                isSameDate = true;
-            } else {
-                isSameDate = false;
-            }
-        }
-    }
+	// Изменим имя переменной current_Date на currentDate, чтобы весь
+	// код был в CamelCase.
+	const currentDate = Date.now();
 
-    return {
-        isSameDate: isSameDate,
-        dayPeriod: hour > 11 ? 'pm' : 'am'
-    }
+	// Переведём милисекунды в секунды, поделив на 1000, и в дни, поделив
+	// на 60 * 60 * 24 = 86400 (то есть на 86400000) и округлив результат
+	// деления вниз.
+	const curDaysCount = Math.floor(currentDate / 86400000);
+	const inputDaysCount = Math.floor(timestamp / 86400000);
+
+	console.log(curDaysCount, inputDaysCount);
+
+	// Создадим экземпляр объекта Date и воспользуемся методом getHours(),
+	// чтобы получить часы даты, переданной как параметр функции.
+	const inputHours = new Date(timestamp).getHours();
+
+	// Для проверки соответствия даты текущей используем проверку строгого
+	// равенства (без приведения типов) количества дней с 1 января 1970 года
+	// 00:00:00 по UTC до полученной в параметре даты и до текущей даты.
+
+	// Для определения периода дня сравним часы полученной в параметре даты
+	// с 12 (>= 12 часов или < 12 часов соответственно pm и am).
+	return {
+		isSameDate: curDaysCount === inputDaysCount,
+		dayPeriod: inputHours >= 12 ? 'pm' : 'am',
+	};
 }
